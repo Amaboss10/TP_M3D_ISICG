@@ -85,6 +85,7 @@ namespace M3D_ISICG
 		pSommets.push_back( glm::vec2( 0.5, 0.5 ) );
 		pSommets.push_back( glm::vec2( 0.5, -0.5 ) );
 		
+		
 		// Creation du vbo et remplissement du VBO avec les sommets
 		glCreateBuffers( 1, &_vbo );
 		glBindBuffer( GL_ARRAY_BUFFER, _vbo );
