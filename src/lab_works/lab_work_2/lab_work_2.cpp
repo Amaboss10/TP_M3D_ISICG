@@ -2,6 +2,7 @@
 #include "lab_work_2.hpp"
 #include "utils/read_file.hpp"
 #include <iostream>
+#include "glm/gtc/type_ptr.hpp"
 
 namespace M3D_ISICG
 {
@@ -10,7 +11,9 @@ namespace M3D_ISICG
 	// Ajout d'un attribut pour stocker l'identifiant du programme
 	GLuint				   program;
 	std::vector<glm::vec2> ptSommets;
+	std::vector<glm::vec3> colors;
 	GLuint				   vbo;
+	GLuint				   colorVBO;
 	GLuint				   vao;
 	GLuint				   ebo;
 
@@ -19,11 +22,11 @@ namespace M3D_ISICG
 		// Ajout de la destruction du programme OpenGL dans le destructeur
 		glDeleteProgram( program );
 		glDeleteBuffers( 1, &vbo );
-		glDisableVertexArrayAttrib( vao, 0 );
+		glDeleteBuffers( 1, &colorVBO );
 		glDeleteVertexArrays( 1, &vao );
 	}
 
-	bool LabWork2::init()
+	bool LabWork2::init() 
 	{
 		std::cout << "Initializing lab work 2..." << std::endl;
 
@@ -89,18 +92,41 @@ namespace M3D_ISICG
 		
 		// Indices des sommets formant les 2 triangles du quadrilatère
 		std::vector<int> indices = { 0, 1, 2, 0, 2, 3 };
-		
+
+		//initialisation des couleurs
+		colors.push_back(glm::vec3( 1.0f, 0.0f, 0.0f )); //red
+		colors.push_back( glm::vec3( 0.0f, 1.0f, 0.0f ) );//green
+		colors.push_back( glm::vec3( 0.0f, 0.0f, 1.0f ) );//blue
+		colors.push_back( glm::vec3( 1.0f, 0.0f, 1.0f ) ); //magenta
+
+		// nous allons avoir deux uniform afin de faire notre translation du rectangle de gauche a droite, et une pour
+		// la luminosite des couleurs
+		uTranslationXUniform = glGetUniformLocation( program, "uTranslationX" );
+		uLuminosity		   = glGetUniformLocation( program, "uLuminosity" );
+
+		// on envoie a la valeur uLuminosity dans le shader le chiffre 1
+		glProgramUniform1f( program, this->uLuminosity, 1 );
+
+		//Ajout de colorVBO pour stocker les couleurs
+		glCreateBuffers( 1, &colorVBO );
+		glBindBuffer( GL_ARRAY_BUFFER, colorVBO );
+		glNamedBufferData( colorVBO, colors.size() * sizeof( glm::vec3), colors.data(), GL_STATIC_DRAW );
+		// lier colorVBO au vao
+		glCreateVertexArrays( 1, &vao );
+		glVertexArrayVertexBuffer( vao, 1, colorVBO, 0, sizeof( glm::vec3 ) );
+	
+		glEnableVertexArrayAttrib( vao, 1 );
+		glVertexArrayAttribFormat( vao, 1, 3, GL_FLOAT, GL_FALSE, 0 );
+
 		// Creation du vbo et remplissement du VBO avec les sommets
 		glCreateBuffers( 1, &vbo );
 		glBindBuffer( GL_ARRAY_BUFFER, vbo );
 		glNamedBufferData( vbo, ptSommets.size() * sizeof( glm::vec2 ), ptSommets.data(), GL_STATIC_DRAW );
-
+		
 		// Création de l'EBO et remplissage avec les indices
 		glCreateBuffers( 1, &ebo );
 		glNamedBufferData( ebo, indices.size() * sizeof( GLuint ), indices.data(), GL_STATIC_DRAW );
 		
-		// Creation du vao
-		glCreateVertexArrays( 1, &vao );
 		glEnableVertexArrayAttrib( vao, 0 );
 		glVertexArrayAttribFormat( vao, 0, 2, GL_FLOAT, GL_FALSE, 0 );
 
@@ -117,7 +143,12 @@ namespace M3D_ISICG
 		return true;
 	}
 
-	void LabWork2::animate( const float p_deltaTime ) {}
+	void LabWork2::animate( const float p_deltaTime ) {
+		// on va effectuer un translation en fonction du temps et l'envoyer a notre shader
+		float translation = glm::sin( this->_time ) / 2;
+		glUniform1f( uTranslationXUniform, translation );
+		this->_time += p_deltaTime;
+	}
 
 	void LabWork2::render()
 	{
@@ -126,7 +157,7 @@ namespace M3D_ISICG
 		// Lier le Vao au programme
 		glBindVertexArray( vao );
 		// GL_TRIANGLE en paramètre pour spécifier de dessiner un triangle avec les 3 sommets
-		glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0 );
+		glDrawElements( GL_TRIANGLES, 6,  GL_UNSIGNED_INT, 0 );
 		glBindVertexArray( 0 );
 	}
 
@@ -136,6 +167,16 @@ namespace M3D_ISICG
 	{
 		ImGui::Begin( "Settings lab work 2" );
 		ImGui::Text( "No setting available!" );
+
+		if ( ImGui::SliderFloat( "Luminosity", &luminosity, 0, 1 ) )
+		{
+			glProgramUniform1f( program, uLuminosity, luminosity );
+		}
+
+		if ( ImGui::ColorEdit3( "color", glm::value_ptr( this->_bgColor ) ) )
+			glClearColor( _bgColor.x, _bgColor.y, _bgColor.z, _bgColor.w );
+
+
 		ImGui::End();
 	}
 

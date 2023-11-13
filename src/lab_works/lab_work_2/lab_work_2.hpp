@@ -11,7 +11,7 @@ namespace M3D_ISICG
 	class LabWork2 : public BaseLabWork
 	{
 	  public:
-		LabWork2() : BaseLabWork() {}
+		LabWork2() : BaseLabWork(), program(0) {}
 		~LabWork2();
 
 		bool init() override;
@@ -28,6 +28,10 @@ namespace M3D_ISICG
 		GLuint				   vbo;
 		std::vector<glm::vec2> ptSommets;
 		std::vector<GLuint>	   indices;
+		GLuint				   uTranslationXUniform;
+		GLfloat				   uLuminosity = 1;
+		float				   _time	   = 0;
+		float				   luminosity  = 1;
 
 		// ================ Scene data.
 		// ================
@@ -43,4 +47,4 @@ namespace M3D_ISICG
 	};
 } // namespace M3D_ISICG
 
-#endif // __LAB_WORK_1_HPP__
+#endif // __LAB_WORK_2_HPP__
