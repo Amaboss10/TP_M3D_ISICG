@@ -161,12 +161,12 @@ namespace M3D_ISICG
 	void LabWork3::render()
 	{
 		// netoyage du framebuffer
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		//glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		// Lier le Vao au programme
-		glBindVertexArray( _cube.vao );
+		//glBindVertexArray( _cube.vao );
 		// GL_TRIANGLE en paramètre pour spécifier de dessiner un triangle avec les 3 sommets
-		glDrawElements( GL_TRIANGLES, _cube.pSommets.size(), GL_UNSIGNED_INT, 0 );
-		glBindVertexArray( 0 );
+		//glDrawElements( GL_TRIANGLES, _cube.pSommets.size(), GL_UNSIGNED_INT, 0 );
+		//glBindVertexArray( 0 );
 	}
 
 	void LabWork3::handleEvents( const SDL_Event & p_event ) {}
