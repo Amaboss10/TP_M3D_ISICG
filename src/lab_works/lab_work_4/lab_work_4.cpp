@@ -50,6 +50,9 @@ namespace M3D_ISICG
 			return false;
 		}
 
+		// on charge le fichier bunny.obj 
+		mesh.load( "bunny", "data/model/bunny.obj" ); 
+
 		// Création de notre program
 		GLuint program = glCreateProgram();
 

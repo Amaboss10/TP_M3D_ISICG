@@ -31,7 +31,7 @@ namespace M3D_ISICG
 		// ================
 		
 		// ================ Create a mesh 
-		
+		TriangleMeshModel mesh;
 
 		// ================ GL data.
 		
