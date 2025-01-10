@@ -15,8 +15,8 @@ namespace M3D_ISICG
 	{
 		std::cout << "Initializing lab work 5..." << std::endl;
 
-		const std::string vertexShaderStr	= readFile( _shaderFolder + "lw4.vert" );
-		const std::string fragmentShaderStr = readFile( _shaderFolder + "lw4.frag" );
+		const std::string vertexShaderStr	= readFile( _shaderFolder + "lw5.vert" );
+		const std::string fragmentShaderStr = readFile( _shaderFolder + "lw5.frag" );
 		const GLchar *	  vSrc				= vertexShaderStr.c_str();
 		const GLchar *	  fSrc				= fragmentShaderStr.c_str();
 

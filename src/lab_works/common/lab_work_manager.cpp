@@ -5,6 +5,7 @@
 #include "lab_work_3/lab_work_3.hpp"
 #include "lab_work_4/lab_work_4.hpp"
 #include "lab_work_5/lab_work_5.hpp"
+
 namespace M3D_ISICG
 {
 	LabWorkManager::LabWorkManager()
@@ -44,6 +45,8 @@ namespace M3D_ISICG
 				_current -> init();		  // Don ’t forget to call init ().
 			}
 		}
+
+
 		if ( ImGui ::MenuItem( "Lab work 3" ) )
 		{
 			if ( _type != TYPE ::LAB_WORK_3 ) // Change only if needed .

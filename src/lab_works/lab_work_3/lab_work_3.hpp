@@ -12,14 +12,14 @@ namespace M3D_ISICG
 	{
 		struct Mesh
 		{
-			~Mesh() 
+			~Mesh()
 			{
-					glDisableVertexArrayAttrib( vao, 0 );
-					glDisableVertexArrayAttrib( vao, 1 );
-					glDeleteVertexArrays( 1, &vao );
-					glDeleteBuffers( 1, &_vboPositions );
-					glDeleteBuffers( 1, &_vboColors );
-					glDeleteBuffers( 1, &ebo );
+				glDisableVertexArrayAttrib( vao, 0 );
+				glDisableVertexArrayAttrib( vao, 1 );
+				glDeleteVertexArrays( 1, &vao );
+				glDeleteBuffers( 1, &_vboPositions );
+				glDeleteBuffers( 1, &_vboColors );
+				glDeleteBuffers( 1, &ebo );
 			}
 			// ================ GL data.
 
@@ -33,11 +33,9 @@ namespace M3D_ISICG
 			GLuint ebo = GL_INVALID_INDEX;
 
 			// ================ Vertex Buffer Objects.
-			GLuint _vboPositions ;
-			GLuint _vboColors	 ;
+			GLuint _vboPositions;
+			GLuint _vboColors;
 			// ================
-		
-
 		};
 
 	  public:
@@ -50,22 +48,19 @@ namespace M3D_ISICG
 
 		void handleEvents( const SDL_Event & p_event ) override;
 		void displayUI() override;
-		
 
 	  private:
-
 		// ================ Scene data.
-		 Mesh _cube;
+		Mesh _cube;
 		// ================
-		
-		// ================ Create a mesh 
-		 Mesh _createCube();
+
+		// ================ Create a mesh
+		Mesh _createCube();
 
 		// ================ GL data.
 		// Ajout d'un attribut pour stocker l'identifiant du programme
-		GLuint					  program;
-		
-		
+		GLuint program;
+
 		// ================ Functions
 		void _initBuffers();
 

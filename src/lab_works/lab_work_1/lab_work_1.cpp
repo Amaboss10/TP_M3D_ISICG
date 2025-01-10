@@ -8,7 +8,7 @@ namespace M3D_ISICG
 	const std::string LabWork1::_shaderFolder = "src/lab_works/lab_work_1/shaders/";
 	
 	// Ajout d'un attribut pour stocker l'identifiant du programme
-	GLuint				   _program;
+	
 	std::vector<glm::vec2> pSommets;
 	GLuint				   _vbo;
 	GLuint				   _vao;
