@@ -7,16 +7,14 @@
 #include "define.hpp"
 #include <vector>
 #include <map>
-#include "../src/lab_works/common/models/triangle_mesh_model.hpp"
+#include "common/models/triangle_mesh_model.hpp"
 
 namespace M3D_ISICG
 {
 	class LabWork4 : public BaseLabWork
 	{
-		
-
 	  public:
-		LabWork4() : BaseLabWork() {}
+		LabWork4() = default;
 		~LabWork4();
 
 		bool init() override;
@@ -25,43 +23,42 @@ namespace M3D_ISICG
 
 		void handleEvents( const SDL_Event & p_event ) override;
 		void displayUI() override;
+
 		void resize( const int p_width, const int p_height ) override;
+	  
+	  private: 
+		void _updateViewMatrix();
+		void _initCamera();
+		void _resetLightingToDefault();
+
 
 	  private:
+		Camera					 _camera;
+		TriangleMeshModel		 _model;
 
-		// ================ Scene data.
-		TriangleMeshModel mesh;
-		Camera			  _camera;
-		// ================
+		GLuint					 _program			   = GL_INVALID_INDEX;
+		GLint  _uMVPMatrixLoc = GL_INVALID_INDEX;
+		GLint  _uMVMatrixLoc  = GL_INVALID_INDEX;
 
-		// ================ GL data.
-		GLuint _program;
-		GLint _uMVPMatrixLoc = GL_INVALID_INDEX;
-		GLint _uMVMatrixLoc	 = GL_INVALID_INDEX;
+		GLint					 _uModelMatrixLoc	   = -1;
+		GLint					 _uViewMatrixLoc	   = -1;
+		GLint					 _uProjectionMatrixLoc = -1;
+		GLint					 _uNormalMatrixLoc	   = GL_INVALID_INDEX;
+		GLint					 _uCameraPositionLoc   = GL_INVALID_INDEX;
+		GLint					 _uLightPositionLoc	   = GL_INVALID_INDEX;
 
-		GLint _uModelMatrixLoc		= GL_INVALID_INDEX;
-		GLint _uViewMatrixLoc		= GL_INVALID_INDEX;
-		GLint _uProjectionMatrixLoc = GL_INVALID_INDEX;
-		GLint _uNormalMatrixLoc		= GL_INVALID_INDEX;
-		GLint _uCameraPositionLoc	= GL_INVALID_INDEX;
-		
-		// ================ Functions
-		void _initCamera();
-		void _updateViewMatrix();
-		bool _initProgram();
-	
 
-		// ================ Settings.
-		Vec4f _bgColor = Vec4f( 0.8f, 0.8f, 0.8f, 1.f ); // Background color
-		
-		// Camera
-		float _cameraSpeed		 = 0.1f;
-		float _cameraSensitivity = 0.1f;
-		float _fovy				 = 60.f;
-		Mat4f MVPMatrix;
-		Mat4f modelMatrix = glm::mat4( 1.f );
+		Vec4f					 _bgColor = Vec4f( 0.2f, 0.2f, 0.2f, 1.f );
+		Vec3f _ambientColor	 = Vec3f( 0.2f, 0.2f, 0.2f );
+		Vec3f _diffuseColor	 = Vec3f( 0.2f, 0.4f, 1.0f ); 
+		Vec3f _specularColor = Vec3f( 1.0f, 1.0f, 1.0f );
+		float _shininess	 = 32.0f;
+		Vec3f					 _lightPosition = Vec3f( 1.0f, 1.2f, 1.5f );
 
-		// ================
+		float					 _rotationAngle		= 0.f;
+		float					 _cameraSpeed		= 0.1f;
+		float					 _cameraSensitivity = 0.1f;
+		float					 _fovy				= 60.f;
 
 		static const std::string _shaderFolder;
 	};
