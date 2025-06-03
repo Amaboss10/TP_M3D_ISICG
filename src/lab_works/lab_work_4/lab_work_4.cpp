@@ -24,7 +24,7 @@ namespace M3D_ISICG
 		glEnable( GL_DEPTH_TEST );
 
 		// Chargement du modèle
-		_model.load( "bunny", "data/models/bunny/bunny.obj" );
+		_loadScene( "conference" );
 
 		_initCamera();
 		glUseProgram( _program );
@@ -65,6 +65,8 @@ namespace M3D_ISICG
 		glProgramUniform3fv(
 		 	_program, glGetUniformLocation( _program, "speculaireColor" ), 1, glm::value_ptr( _specularColor ) );
 		glProgramUniform1f( _program, glGetUniformLocation( _program, "shininess" ), _shininess );
+		glProgramUniform1i( _program, glGetUniformLocation( _program, "useBlinn" ), _useBlinnPhong ); 
+
 
 		_model.render( _program );
 	}
@@ -127,8 +129,8 @@ namespace M3D_ISICG
 	void LabWork4::_initCamera()
 	{
 		_camera.setScreenSize( _windowWidth, _windowHeight );
-		_camera.setPosition( Vec3f( 0.f, 0.f, 2.f ) ); // caméra en recul
-		_camera.setLookAt( Vec3f( 0.f, 0.f, 0.f ) );   // regarde vers l'origine
+		_camera.setPosition( Vec3f( 0.20f, 1.17f, 1.71f ) );
+		_camera.setLookAt( Vec3f( 0.2f, 1.f, 0.2f ) );
 		_camera.setFovy( _fovy );					   // 60° par défaut
 	}
 
@@ -139,6 +141,33 @@ namespace M3D_ISICG
 		_specularColor = Vec3f( 1.0f, 1.0f, 1.0f ); 
 		_shininess	   = 32.0f;
 	}
+
+	void LabWork4::_loadScene( const std::string & name )
+	{
+		_model.cleanGL();
+		_model = TriangleMeshModel(); // reset complet du modèle
+
+		if ( name == "bunny" )
+		{
+			_model.load( "bunny", "data/models/bunny/bunny.obj" );
+			_model._transformation = glm::mat4( 1.f );
+			_camera.setPosition( Vec3f( 0.f, 0.f, 2.f ) );
+			_camera.setLookAt( Vec3f( 0.f, 0.f, 0.f ) );
+			_lightPosition = Vec3f( 0.f, 2.f, 1.f );
+		}
+		else if ( name == "conference" )
+		{
+			_model.load( "conference", "data/models/conference/conference.obj" );
+			_model._transformation = glm::scale( glm::mat4( 1.f ), glm::vec3( 0.003f ) );
+			_camera.setPosition( Vec3f( 0.2f, 1.17f, 1.71f ) );
+			_camera.setLookAt( Vec3f( 0.2f, 1.f, 0.2f ) );
+			_lightPosition = Vec3f( 0.f, 3.f, 2.f );
+		}
+
+		_updateViewMatrix();
+	}
+
+
 
 
 	void LabWork4::displayUI()
@@ -172,6 +201,18 @@ namespace M3D_ISICG
 		// Contrôle de l’angle de vue de la caméra (fovy)
 		if ( ImGui::SliderFloat( "fovy", &_fovy, 10.f, 160.f, "%01.f" ) )
 			_camera.setFovy( _fovy );
+
+		const Vec3f & camPos = _camera.getPos();
+		ImGui::Text( "Camera Position: X=%.2f  Y=%.2f  Z=%.2f", camPos.x, camPos.y, camPos.z );
+
+		// Sélecteur de décor (bunny / conference)
+		const char * sceneLabels[] = { "Bunny", "Conference" };
+		if ( ImGui::Combo( "Scene", &_currentSceneIndex, sceneLabels, IM_ARRAYSIZE( sceneLabels ) ) )
+		{
+			_loadScene( _sceneNames[ _currentSceneIndex ] );
+		}
+
+		ImGui::Checkbox( "Use Blinn-Phong", &_useBlinnPhong );
 
 		ImGui::End();
 	}

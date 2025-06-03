@@ -14,54 +14,63 @@ namespace M3D_ISICG
 	class LabWork4 : public BaseLabWork
 	{
 	  public:
+		// Construction
 		LabWork4() = default;
 		~LabWork4();
 
+		// Méthodes principales
 		bool init() override;
-		void animate( const float p_deltaTime ) override;
+		void animate( const float ) override;
 		void render() override;
-
-		void handleEvents( const SDL_Event & p_event ) override;
+		void handleEvents( const SDL_Event & ) override;
 		void displayUI() override;
+		void resize( const int, const int ) override;
 
-		void resize( const int p_width, const int p_height ) override;
-	  
-	  private: 
+	  private:
+		// Méthodes internes
 		void _updateViewMatrix();
 		void _initCamera();
 		void _resetLightingToDefault();
+		void _loadScene( const std::string & name );
 
+		// Composants
+		Camera			  _camera;
+		TriangleMeshModel _model;
+		GLuint			  _program = GL_INVALID_INDEX;
 
-	  private:
-		Camera					 _camera;
-		TriangleMeshModel		 _model;
+		// Uniform locations
+		GLint _uMVPMatrixLoc		= GL_INVALID_INDEX;
+		GLint _uMVMatrixLoc			= GL_INVALID_INDEX;
+		GLint _uViewMatrixLoc		= GL_INVALID_INDEX;
+		GLint _uNormalMatrixLoc		= GL_INVALID_INDEX;
+		GLint _uCameraPositionLoc	= GL_INVALID_INDEX;
+		GLint _uLightPositionLoc	= GL_INVALID_INDEX;
 
-		GLuint					 _program			   = GL_INVALID_INDEX;
-		GLint  _uMVPMatrixLoc = GL_INVALID_INDEX;
-		GLint  _uMVMatrixLoc  = GL_INVALID_INDEX;
-
-		GLint					 _uModelMatrixLoc	   = -1;
-		GLint					 _uViewMatrixLoc	   = -1;
-		GLint					 _uProjectionMatrixLoc = -1;
-		GLint					 _uNormalMatrixLoc	   = GL_INVALID_INDEX;
-		GLint					 _uCameraPositionLoc   = GL_INVALID_INDEX;
-		GLint					 _uLightPositionLoc	   = GL_INVALID_INDEX;
-
-
-		Vec4f					 _bgColor = Vec4f( 0.2f, 0.2f, 0.2f, 1.f );
+		// Éclairage
 		Vec3f _ambientColor	 = Vec3f( 0.2f, 0.2f, 0.2f );
-		Vec3f _diffuseColor	 = Vec3f( 0.2f, 0.4f, 1.0f ); 
+		Vec3f _diffuseColor	 = Vec3f( 0.1f, 0.0f, 0.0f );
 		Vec3f _specularColor = Vec3f( 1.0f, 1.0f, 1.0f );
+		Vec3f _lightPosition = Vec3f( 0.f, 2.5f, 2.f );
 		float _shininess	 = 32.0f;
-		Vec3f					 _lightPosition = Vec3f( 1.0f, 1.2f, 1.5f );
+		bool  _useBlinnPhong = true;
 
-		float					 _rotationAngle		= 0.f;
-		float					 _cameraSpeed		= 0.1f;
-		float					 _cameraSensitivity = 0.1f;
-		float					 _fovy				= 60.f;
+		// Caméra
+		float _fovy				 = 60.f;
+		float _cameraSpeed		 = 0.1f;
+		float _cameraSensitivity = 0.1f;
+		float _rotationAngle	 = 0.f;
 
+		// Scènes
+		int						 _currentSceneIndex = 0;
+		std::vector<std::string> _sceneNames		= { "bunny", "conference" };
+
+		// Fond
+		Vec4f _bgColor = Vec4f( 0.2f, 0.2f, 0.2f, 1.f );
+
+		// Shaders
 		static const std::string _shaderFolder;
 	};
+
 } // namespace M3D_ISICG
 
 #endif // __LAB_WORK_4_HPP__
