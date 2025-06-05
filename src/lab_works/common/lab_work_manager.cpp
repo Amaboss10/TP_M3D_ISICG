@@ -83,7 +83,7 @@ namespace M3D_ISICG
 				const int w = _current->getWindowWidth();
 				const int h = _current->getWindowHeight();
 				delete _current;			  // Delete old lab work .
-				_current = new LabWork3();	  // Create new lab work .
+				_current = new LabWork5();	  // Create new lab work .
 				_type	 = TYPE ::LAB_WORK_5; // Update type .
 				_current->resize( w, h );	  // Update window size .
 				_current->init();			  // Don ’t forget to call init ().

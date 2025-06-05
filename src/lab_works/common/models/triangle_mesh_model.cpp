@@ -34,6 +34,14 @@ namespace M3D_ISICG
 		}
 		_meshes.shrink_to_fit();
 
+		// Tri : d'abord les objets opaques, ensuite les transparents
+		std::partition( _meshes.begin(),
+						_meshes.end(),
+						[]( const TriangleMesh & mesh ) -> bool {
+								return mesh._material._isOpaque; 
+						});
+
+
 		std::cout << "Done! "						//
 				  << _meshes.size() << " meshes, "	//
 				  << _nbTriangles << " triangles, " //
@@ -146,10 +154,10 @@ namespace M3D_ISICG
 
 		aiColor3D color;
 		aiString  texturePath;
-		Texture	  texture; // We suppose to have at most one texture per type.
+		Texture	  texture;
 
 		// ===================================================== AMBIENT
-		if ( p_mtl->GetTextureCount( aiTextureType_AMBIENT ) > 0 ) // Texture ?
+		if ( p_mtl->GetTextureCount( aiTextureType_AMBIENT ) > 0 )
 		{
 			p_mtl->GetTexture( aiTextureType_AMBIENT, 0, &texturePath );
 			texture = _loadTexture( texturePath, "ambient" );
@@ -159,14 +167,13 @@ namespace M3D_ISICG
 				material._hasAmbientMap = true;
 			}
 		}
-		else if ( p_mtl->Get( AI_MATKEY_COLOR_AMBIENT, color ) == AI_SUCCESS ) // else Material ?
+		else if ( p_mtl->Get( AI_MATKEY_COLOR_AMBIENT, color ) == AI_SUCCESS )
 		{
 			material._ambient = Vec3f( color.r, color.g, color.b );
 		}
-		// =====================================================
 
 		// ===================================================== DIFFUSE
-		if ( p_mtl->GetTextureCount( aiTextureType_DIFFUSE ) > 0 ) // Texture ?
+		if ( p_mtl->GetTextureCount( aiTextureType_DIFFUSE ) > 0 )
 		{
 			p_mtl->GetTexture( aiTextureType_DIFFUSE, 0, &texturePath );
 			texture = _loadTexture( texturePath, "diffuse" );
@@ -176,14 +183,13 @@ namespace M3D_ISICG
 				material._hasDiffuseMap = true;
 			}
 		}
-		else if ( p_mtl->Get( AI_MATKEY_COLOR_DIFFUSE, color ) == AI_SUCCESS ) // else Material ?
+		else if ( p_mtl->Get( AI_MATKEY_COLOR_DIFFUSE, color ) == AI_SUCCESS )
 		{
 			material._diffuse = Vec3f( color.r, color.g, color.b );
 		}
-		// =====================================================
 
 		// ===================================================== SPECULAR
-		if ( p_mtl->GetTextureCount( aiTextureType_SPECULAR ) > 0 ) // Texture ?
+		if ( p_mtl->GetTextureCount( aiTextureType_SPECULAR ) > 0 )
 		{
 			p_mtl->GetTexture( aiTextureType_SPECULAR, 0, &texturePath );
 			texture = _loadTexture( texturePath, "specular" );
@@ -193,15 +199,14 @@ namespace M3D_ISICG
 				material._hasSpecularMap = true;
 			}
 		}
-		else if ( p_mtl->Get( AI_MATKEY_COLOR_SPECULAR, color ) == AI_SUCCESS ) // else Material ?
+		else if ( p_mtl->Get( AI_MATKEY_COLOR_SPECULAR, color ) == AI_SUCCESS )
 		{
 			material._specular = Vec3f( color.r, color.g, color.b );
 		}
-		// =====================================================
 
 		// ===================================================== SHININESS
 		float shininess;
-		if ( p_mtl->GetTextureCount( aiTextureType_SHININESS ) > 0 ) // Texture ?
+		if ( p_mtl->GetTextureCount( aiTextureType_SHININESS ) > 0 )
 		{
 			p_mtl->GetTexture( aiTextureType_SHININESS, 0, &texturePath );
 			texture = _loadTexture( texturePath, "shininess" );
@@ -211,12 +216,28 @@ namespace M3D_ISICG
 				material._hasShininessMap = true;
 			}
 		}
-		else if ( p_mtl->Get( AI_MATKEY_SHININESS, shininess ) == AI_SUCCESS ) // else Material ?
+		else if ( p_mtl->Get( AI_MATKEY_SHININESS, shininess ) == AI_SUCCESS )
 		{
 			material._shininess = shininess;
 		}
 
-		// =====================================================
+		// ===================================================== NORMAL MAP
+		if ( p_mtl->GetTextureCount( aiTextureType_NORMALS ) > 0 )
+		{
+			p_mtl->GetTexture( aiTextureType_NORMALS, 0, &texturePath );
+			texture = _loadTexture( texturePath, "normal" );
+			if ( texture._id != GL_INVALID_INDEX )
+			{
+				material._normalMap	   = texture;
+				material._hasNormalMap = true;
+			}
+		}
+		// ===================================================== TRANSPARENCE
+		material._isOpaque = true;
+		if ( p_mtl->GetTextureCount( aiTextureType_OPACITY ) > 0 )
+		{
+			material._isOpaque = false;
+		}
 
 		return material;
 	}
@@ -234,14 +255,11 @@ namespace M3D_ISICG
 			if ( std::strcmp( _loadedTextures[ i ]._path.data(), path ) == 0 )
 			{
 				if ( VERBOSE )
-				{
 					std::cout << "-> Already loaded !" << std::endl;
-				}
+
 				if ( _loadedTextures[ i ]._type == p_type )
-				{
 					return _loadedTextures[ i ];
-				}
-				else // One texture can be used for more than one type.
+				else
 				{
 					Texture texture;
 					texture._id	  = _loadedTextures[ i ]._id;
@@ -252,56 +270,56 @@ namespace M3D_ISICG
 			}
 		}
 
-		Texture texture;
-
-		// Load the image and send it to the GPU.
+		Texture			  texture;
 		Image			  image;
 		const std::string fullPath = _dirPath + path;
 
 		if ( image.load( fullPath ) )
 		{
-			// Create a texture on the GPU.
 			glCreateTextures( GL_TEXTURE_2D, 1, &texture._id );
 			texture._path = path;
 			texture._type = p_type;
 
-			// Define formats.
-			GLenum format		  = GL_INVALID_ENUM;
-			GLenum internalFormat = GL_INVALID_ENUM;
+			// Définition des formats
+			GLenum format		  = GL_RGBA;
+			GLenum internalFormat = GL_RGBA8; // format interne adapté pour mipmaps
+
 			if ( image._nbChannels == 1 )
 			{
 				format		   = GL_RED;
-				internalFormat = GL_R32F;
-			}
-			else if ( image._nbChannels == 2 )
-			{
-				format		   = GL_RG;
-				internalFormat = GL_RG32F;
+				internalFormat = GL_R8;
 			}
 			else if ( image._nbChannels == 3 )
 			{
 				format		   = GL_RGB;
-				internalFormat = GL_RGB32F;
+				internalFormat = GL_RGB8;
 			}
-			else
+			else if ( image._nbChannels == 4 )
 			{
 				format		   = GL_RGBA;
-				internalFormat = GL_RGBA32F;
+				internalFormat = GL_RGBA8;
 			}
 
-			// Setup the texture format.
-			glTextureStorage2D( texture._id, 1, internalFormat, image._width, image._height );
-			glTextureParameteri( texture._id, GL_TEXTURE_WRAP_S, GL_REPEAT );
-			glTextureParameteri( texture._id, GL_TEXTURE_WRAP_T, GL_REPEAT );
-			glTextureParameteri( texture._id, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTextureParameteri( texture._id, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			// Calcul du nombre de niveaux de mipmaps
+			int mipLevels = static_cast<int>( std::floor( std::log2( std::max( image._width, image._height ) ) ) ) + 1;
 
-			// Fill the texture.
+			// Allocation de l’espace pour les mipmaps
+			glTextureStorage2D( texture._id, mipLevels, internalFormat, image._width, image._height );
+
+			// Remplissage du niveau 0
 			glTextureSubImage2D(
 				texture._id, 0, 0, 0, image._width, image._height, format, GL_UNSIGNED_BYTE, image._pixels );
+
+			// Génération des mipmaps
+			glGenerateTextureMipmap( texture._id );
+
+			// Paramètres de filtrage
+			glTextureParameteri( texture._id, GL_TEXTURE_WRAP_S, GL_REPEAT );
+			glTextureParameteri( texture._id, GL_TEXTURE_WRAP_T, GL_REPEAT );
+			glTextureParameteri( texture._id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR ); // trilineaire
+			glTextureParameteri( texture._id, GL_TEXTURE_MAG_FILTER, GL_LINEAR );				// bilineaire
 		}
 
-		// Save loaded texture.
 		_loadedTextures.emplace_back( texture );
 
 		if ( VERBOSE )
@@ -309,5 +327,6 @@ namespace M3D_ISICG
 
 		return texture;
 	}
+
 
 } // namespace M3D_ISICG

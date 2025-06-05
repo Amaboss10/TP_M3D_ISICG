@@ -36,6 +36,8 @@ namespace M3D_ISICG
 		bool _hasSpecularMap  = false;
 		bool _hasShininessMap = false;
 		bool _hasNormalMap	  = false;
+		bool _isOpaque		  = true;
+
 
 		Texture _ambientMap;
 		Texture _diffuseMap;

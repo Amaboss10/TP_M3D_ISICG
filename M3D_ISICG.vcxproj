@@ -76,8 +76,8 @@
     <None Include="src\lab_works\lab_work_3\shaders\lw3.vert" />
     <None Include="src\lab_works\lab_work_4\shaders\lw4.frag" />
     <None Include="src\lab_works\lab_work_4\shaders\lw4.vert" />
-    <None Include="src\lab_works\lab_work_5\shaders\lw5.frag" />
-    <None Include="src\lab_works\lab_work_5\shaders\lw5.vert" />
+    <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.frag" />
+    <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
