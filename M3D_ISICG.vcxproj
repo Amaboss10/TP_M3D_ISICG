@@ -36,6 +36,7 @@
     <ClCompile Include="src\lab_works\lab_work_3\lab_work_3.cpp" />
     <ClCompile Include="src\lab_works\lab_work_4\lab_work_4.cpp" />
     <ClCompile Include="src\lab_works\lab_work_5\lab_work_5.cpp" />
+    <ClCompile Include="src\lab_works\lab_work_6\lab_work_6.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\image.cpp" />
   </ItemGroup>
@@ -61,6 +62,9 @@
     <ClInclude Include="src\lab_works\lab_work_3\lab_work_3.hpp" />
     <ClInclude Include="src\lab_works\lab_work_4\lab_work_4.hpp" />
     <ClInclude Include="src\lab_works\lab_work_5\lab_work_5.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_6\shaders\shading_pass.vert" />
+    <ClInclude Include="src\lab_works\lab_work_6\shaders\shading_pass.frag" />
+    <ClInclude Include="src\lab_works\lab_work_6\lab_work_6.hpp" />
     <ClInclude Include="src\utils\file_path.hpp" />
     <ClInclude Include="src\utils\gl_utils.hpp" />
     <ClInclude Include="src\utils\image.hpp" />
@@ -78,6 +82,8 @@
     <None Include="src\lab_works\lab_work_4\shaders\lw4.vert" />
     <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.frag" />
     <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.vert" />
+    <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.frag" />
+    <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
