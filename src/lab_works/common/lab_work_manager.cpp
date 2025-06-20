@@ -6,6 +6,7 @@
 #include "lab_work_4/lab_work_4.hpp"
 #include "lab_work_5/lab_work_5.hpp"
 #include "lab_work_6/lab_work_6.hpp"
+#include "lab_work_7/lab_work_7.hpp"
 
 namespace M3D_ISICG
 {
@@ -100,6 +101,20 @@ namespace M3D_ISICG
 				delete _current;			  // Delete old lab work .
 				_current = new LabWork6();	  // Create new lab work .
 				_type	 = TYPE ::LAB_WORK_6; // Update type .
+				_current->resize( w, h );	  // Update window size .
+				_current->init();			  // Don ’t forget to call init ().
+			}
+		}
+		if ( ImGui ::MenuItem( "Lab work 7" ) )
+		{
+			if ( _type != TYPE ::LAB_WORK_7 ) // Change only if needed .
+			{
+				// Keep window size .
+				const int w = _current->getWindowWidth();
+				const int h = _current->getWindowHeight();
+				delete _current;			  // Delete old lab work .
+				_current = new LabWork7();	  // Create new lab work .
+				_type	 = TYPE ::LAB_WORK_7; // Update type .
 				_current->resize( w, h );	  // Update window size .
 				_current->init();			  // Don ’t forget to call init ().
 			}

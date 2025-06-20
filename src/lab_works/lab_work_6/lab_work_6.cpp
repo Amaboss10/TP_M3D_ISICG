@@ -1,17 +1,17 @@
 #include "lab_work_6.hpp"
-#include "glm/gtc/type_ptr.hpp"
 #include "define.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "imgui.h"
 
 namespace M3D_ISICG
 {
 	bool LabWork6::init()
-	{	
-		_initCamera(); 
+	{
+		_initCamera();
 		_initGBuffer();
-		_model.load("bunny" ,"data/models/bunny/bunny.obj" );
 		_initGeometryPassProgram();
 		_initShadingPassProgram();
+		_model.load( "bunny", "data/models/bunny/bunny.obj" );
 		_initFullScreenQuad();
 		return true;
 	}
@@ -23,7 +23,6 @@ namespace M3D_ISICG
 	}
 
 	void LabWork6::animate( const float ) {}
-
 
 	void LabWork6::_initGBuffer()
 	{
@@ -67,7 +66,6 @@ namespace M3D_ISICG
 		{
 			throw std::runtime_error( "Failed to create geometry pass program!" );
 		}
-
 	}
 
 	void LabWork6::_initShadingPassProgram()
@@ -78,7 +76,6 @@ namespace M3D_ISICG
 		{
 			throw std::runtime_error( "Failed to create shading pass program!" );
 		}
-
 	}
 
 	void LabWork6::_initFullScreenQuad()
@@ -147,7 +144,6 @@ namespace M3D_ISICG
 			glBlitFramebuffer(
 				0, 0, _windowWidth, _windowHeight, 0, 0, _windowWidth, _windowHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 		}
-
 	}
 
 	void LabWork6::_shadingPass()
@@ -172,12 +168,11 @@ namespace M3D_ISICG
 		glEnable( GL_DEPTH_TEST );
 	}
 
-
 	void LabWork6::_initCamera()
 	{
-			_camera.setPosition( Vec3f( 0.f, 1.f, 3.f ) ); 
-			_camera.setScreenSize( _windowWidth, _windowHeight ); 
-			_camera.setFovy( _fovy );
+		_camera.setPosition( Vec3f( 0.f, 1.f, 3.f ) );
+		_camera.setScreenSize( _windowWidth, _windowHeight );
+		_camera.setFovy( _fovy );
 	}
 
 	void LabWork6::handleEvents( const SDL_Event & p_event )
@@ -251,7 +246,6 @@ namespace M3D_ISICG
 
 		ImGui::End();
 	}
-
 
 	const std::string M3D_ISICG::LabWork6::_shaderFolder = "src/lab_works/lab_work_6/shaders/";
 

@@ -36,6 +36,7 @@ namespace M3D_ISICG
 		bool _hasSpecularMap  = false;
 		bool _hasShininessMap = false;
 		bool _hasNormalMap	  = false;
+		bool _hasAmbientOcclusionMap = false;
 		bool _isOpaque		  = true;
 
 
@@ -44,6 +45,7 @@ namespace M3D_ISICG
 		Texture _specularMap;
 		Texture _shininessMap;
 		Texture _normalMap;
+		Texture _ambientOcclusionMap;
 	};
 
 	class TriangleMesh

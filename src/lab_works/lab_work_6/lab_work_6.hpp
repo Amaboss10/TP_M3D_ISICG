@@ -1,11 +1,12 @@
+
 #ifndef __LAB_WORK_6_HPP__
 #define __LAB_WORK_6_HPP__
 
 #include "GL/gl3w.h"
+#include "common/Shader_utils.hpp"
 #include "common/base_lab_work.hpp"
 #include "common/camera.hpp"
 #include "common/models/triangle_mesh_model.hpp"
-#include "common/Shader_utils.hpp"
 #include "define.hpp"
 #include <vector>
 
@@ -32,18 +33,18 @@ namespace M3D_ISICG
 		void _geometryPass();
 		void _shadingPass();
 		void _initCamera();
-		void _updateViewMatrix(); 
+		void _updateViewMatrix();
 		void resize( const int p_width, const int p_height );
 
-		Camera			  _camera; 
+		Camera			  _camera;
 		TriangleMeshModel _model;
 
 		//=== Camera ===
-		float  _fovy			  = 60.f;
-		float  _cameraSpeed		  = 0.1f;
-		float  _cameraSensitivity = 0.1f;
+		float _fovy				 = 60.f;
+		float _cameraSpeed		 = 0.1f;
+		float _cameraSensitivity = 0.1f;
 
-		Vec3f  _lightPosition	  = Vec3f( 0.f, 2.f, 2.f );
+		Vec3f _lightPosition = Vec3f( 0.f, 2.f, 2.f );
 
 		bool _displayDebugTexture = true; // true = mode debug actif
 

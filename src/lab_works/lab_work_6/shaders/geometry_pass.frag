@@ -23,3 +23,4 @@ void main()
     gAmbient   = vec4(ambientColor, 1.0);
     gDiffuse   = vec4(diffuseColor, 1.0);
     gSpecular  = vec4(specularColor, shininess); 
+}

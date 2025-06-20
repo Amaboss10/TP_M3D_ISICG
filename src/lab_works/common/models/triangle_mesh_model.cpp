@@ -14,7 +14,11 @@ namespace M3D_ISICG
 
 		// Importer options
 		// Cf. http://assimp.sourceforge.net/lib_html/postprocess_8h.html.
-		const unsigned int flags = aiProcessPreset_TargetRealtime_Fast | aiProcess_FlipUVs;
+		//const unsigned int flags = aiProcessPreset_TargetRealtime_Fast | aiProcess_FlipUVs;
+		const unsigned int flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace
+								   | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices
+								   | aiProcess_ImproveCacheLocality;
+
 
 		// Read scene :
 		// - Triangulates meshes
