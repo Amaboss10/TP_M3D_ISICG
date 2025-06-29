@@ -241,7 +241,7 @@ namespace M3D_ISICG
 		static bool	 enableDiffuseMap  = true;
 		static bool	 enableSpecularMap = true;
 		static bool	 enableNormalMap   = true;
-		static float specularIntensity = 0.0f;
+		static float specularIntensity = 1.0f;
 
 		ImGui::Checkbox( "Use Diffuse Map", &enableDiffuseMap );
 		ImGui::Checkbox( "Use Specular Map", &enableSpecularMap );
