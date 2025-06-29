@@ -1,4 +1,3 @@
-// === lab_work_7.cpp ===
 #include "lab_work_7.hpp"
 #include "common/shader_utils.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -11,7 +10,7 @@ namespace M3D_ISICG
 
 	bool LabWork7::init()
 	{
-		std::cout << "Initializing LabWork7 (Deferred + FXAA)..." << std::endl;
+		std::cout << "Initializing LabWork7 - Projet " << std::endl;
 
 		// Load model
 		_model.load( "vokselia", "data/models/vokselia_spawn/vokselia_spawn.obj" );
@@ -24,6 +23,7 @@ namespace M3D_ISICG
 		_initFullScreenQuad();
 		_initGeometryPass();
 		_initFXAA();
+		_initShadowMap();
 
 		glEnable( GL_DEPTH_TEST );
 		glClearColor( _bgColor.x, _bgColor.y, _bgColor.z, _bgColor.w );
@@ -80,7 +80,6 @@ namespace M3D_ISICG
 		_geometryProgram
 			= createProgramFromFiles( _shaderFolder + "geometry_pass.vert", _shaderFolder + "geometry_pass.frag" );
 	}
-
 
 	void LabWork7::_updateGeometryUniforms()
 	{
@@ -150,6 +149,16 @@ namespace M3D_ISICG
 			_geometryProgram, glGetUniformLocation( _geometryProgram, "uSpecularIntensity" ), _specularIntensity );
 		glProgramUniform1f( _geometryProgram, glGetUniformLocation( _geometryProgram, "uAOStrength" ), _aoStrength );
 
+		// === Shadow Mapping ===
+		glProgramUniform1f( _geometryProgram, glGetUniformLocation( _geometryProgram, "uShadowBias" ), _shadowBias );
+		glProgramUniform1i(
+			_geometryProgram, glGetUniformLocation( _geometryProgram, "uEnableShadow" ), _enableShadow );
+		glProgramUniformMatrix4fv( _geometryProgram,
+								   glGetUniformLocation( _geometryProgram, "uLightViewProj" ),
+								   1,
+								   GL_FALSE,
+								   glm::value_ptr( _lightViewProj ) );
+
 		// === Options textures ===
 		glProgramUniform1i( _geometryProgram, glGetUniformLocation( _geometryProgram, "uUseBlinn" ), _useBlinnPhong );
 		glProgramUniform1i(
@@ -160,20 +169,19 @@ namespace M3D_ISICG
 			_geometryProgram, glGetUniformLocation( _geometryProgram, "uEnableNormalMap" ), _enableNormalMap );
 		glProgramUniform1i( _geometryProgram, glGetUniformLocation( _geometryProgram, "uEnableAOMap" ), _enableAOMap );
 
-
 		// === Textures ===
 		const auto & material = _model._meshes[ 0 ]._material;
 		glBindTextureUnit( 1, material._diffuseMap._id );
 		glBindTextureUnit( 2, material._specularMap._id );
 		glBindTextureUnit( 3, material._normalMap._id );
 		glBindTextureUnit( 4, material._ambientOcclusionMap._id );
+		glBindTextureUnit( 5, _shadowDepthMap );
 
 		// === Dessin du modèle ===
 		_model.render( _geometryProgram );
 
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
-
 
 	void LabWork7::_fxaaPass()
 	{
@@ -186,8 +194,69 @@ namespace M3D_ISICG
 		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	}
 
+	void LabWork7::_initShadowMap()
+	{
+		// Créer texture depth
+		glCreateTextures( GL_TEXTURE_2D, 1, &_shadowDepthMap );
+		glTextureStorage2D( _shadowDepthMap, 1, GL_DEPTH_COMPONENT32F, SHADOW_RES, SHADOW_RES );
+		glTextureParameteri( _shadowDepthMap, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+		glTextureParameteri( _shadowDepthMap, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+		glTextureParameteri( _shadowDepthMap, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
+		glTextureParameteri( _shadowDepthMap, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
+		const float borderColor[] = { 1.f, 1.f, 1.f, 1.f };
+		glTextureParameterfv( _shadowDepthMap, GL_TEXTURE_BORDER_COLOR, borderColor );
+
+		// FBO
+		glCreateFramebuffers( 1, &_shadowFBO );
+		glNamedFramebufferTexture( _shadowFBO, GL_DEPTH_ATTACHMENT, _shadowDepthMap, 0 );
+		glNamedFramebufferDrawBuffer( _shadowFBO, GL_NONE );
+		glNamedFramebufferReadBuffer( _shadowFBO, GL_NONE );
+
+		if ( glCheckNamedFramebufferStatus( _shadowFBO, GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+			std::cerr << "[Shadow] Framebuffer incomplete!" << std::endl;
+
+		// Compile le programme
+		_shadowProgram
+			= createProgramFromFiles( _shaderFolder + "shadow_pass.vert", _shaderFolder + "shadow_pass.frag" );
+	}
+
+	void LabWork7::_shadowPass()
+	{
+		glUseProgram( _shadowProgram );
+		glBindFramebuffer( GL_FRAMEBUFFER, _shadowFBO );
+		glViewport( 0, 0, SHADOW_RES, SHADOW_RES );
+		glClear( GL_DEPTH_BUFFER_BIT );
+
+		// Calcul de la matrice VP lumière (vue orthographique pour une lumière directionnelle)
+		Vec3f lightDir	  = glm::normalize( _lightPosition );
+		Vec3f lightTarget = Vec3f( 0.f ); // regarde le centre
+		Vec3f up		  = Vec3f( 0.f, 1.f, 0.f );
+
+		Mat4f lightView = glm::lookAt( _lightPosition, lightTarget, up );
+		float s			= _shadowOrthoSize;
+		Mat4f lightProj = glm::ortho( -s, s, -s, s, 0.1f, 30.f );
+		_lightViewProj	= lightProj * lightView;
+
+		// Uniforms
+		glProgramUniformMatrix4fv( _shadowProgram,
+								   glGetUniformLocation( _shadowProgram, "uLightViewProj" ),
+								   1,
+								   GL_FALSE,
+								   glm::value_ptr( _lightViewProj ) );
+		glProgramUniformMatrix4fv( _shadowProgram,
+								   glGetUniformLocation( _shadowProgram, "uModelMatrix" ),
+								   1,
+								   GL_FALSE,
+								   glm::value_ptr( _model._transformation ) );
+
+		_model.render( _shadowProgram );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+	}
+
 	void LabWork7::render()
 	{
+		_shadowPass();
 		_geometryPass();
 		_fxaaPass();
 	}
@@ -247,7 +316,7 @@ namespace M3D_ISICG
 
 	void LabWork7::displayUI()
 	{
-		ImGui::Begin( "LabWork 7 - FXAA & Material" );
+		ImGui::Begin( "LabWork 7 - Projet" );
 		ImGui::Checkbox( "Enable FXAA", &_useFXAA );
 		ImGui::SliderFloat( "FOV Y", &_fovy, 10.f, 160.f );
 		_camera.setFovy( _fovy );
@@ -266,9 +335,11 @@ namespace M3D_ISICG
 		ImGui::Checkbox( "Use Diffuse Map", &_enableDiffuseMap );
 		ImGui::Checkbox( "Use Specular Map", &_enableSpecularMap );
 		ImGui::Checkbox( "Use Normal Map", &_enableNormalMap );
-		ImGui::Checkbox( "Use AO Map", &_enableAOMap );
-		if ( _enableAOMap )
-			ImGui::SliderFloat( "AO Strength", &_aoStrength, 0.f, 2.f );
+		ImGui::Separator();
+		ImGui::Text( "Shadow Mapping" );
+		ImGui::Checkbox( "Enable Shadows", &_enableShadow );
+		ImGui::SliderFloat( "Shadow Bias", &_shadowBias, 0.005f, 1.f, "%.5f" );
+		ImGui::SliderFloat( "Ortho Size", &_shadowOrthoSize, 2.f, 50.f );
 		ImGui::SliderFloat3( "Light Position", glm::value_ptr( _lightPosition ), -20.f, 20.f );
 
 		ImGui::End();

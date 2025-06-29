@@ -67,6 +67,8 @@
     <ClInclude Include="src\lab_works\lab_work_6\shaders\shading_pass.frag" />
     <ClInclude Include="src\lab_works\lab_work_6\lab_work_6.hpp" />
     <ClInclude Include="src\lab_works\lab_work_7\lab_work_7.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_7\shaders\shadow_pass.vert" />
+    <ClInclude Include="src\lab_works\lab_work_7\shaders\shadow_pass.frag" />
     <ClInclude Include="src\utils\file_path.hpp" />
     <ClInclude Include="src\utils\gl_utils.hpp" />
     <ClInclude Include="src\utils\image.hpp" />

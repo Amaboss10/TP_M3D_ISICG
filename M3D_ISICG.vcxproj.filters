@@ -109,6 +109,12 @@
     <ClCompile Include="src\lab_works\lab_work_5\lab_work_5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\lab_works\lab_work_6\lab_work_6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lab_works\lab_work_7\lab_work_7.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\application.hpp">
@@ -177,6 +183,12 @@
     <ClInclude Include="src\lab_works\lab_work_5\lab_work_5.hpp" />
     <ClInclude Include="src\lab_works\common\base_mesh.hpp" />
     <ClInclude Include="src\lab_works\common\Shader_utils.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_6\shaders\shading_pass.vert" />
+    <ClInclude Include="src\lab_works\lab_work_6\shaders\shading_pass.frag" />
+    <ClInclude Include="src\lab_works\lab_work_6\lab_work_6.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_7\lab_work_7.hpp" />
+    <ClInclude Include="src\lab_works\lab_work_7\shaders\shadow_pass.frag" />
+    <ClInclude Include="src\lab_works\lab_work_7\shaders\shadow_pass.vert" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\lab_works\lab_work_1\shaders\lw1.frag">
@@ -191,7 +203,13 @@
     <None Include="src\lab_works\lab_work_3\shaders\lw3.vert" />
     <None Include="src\lab_works\lab_work_4\shaders\lw4.frag" />
     <None Include="src\lab_works\lab_work_4\shaders\lw4.vert" />
-    <None Include="src\lab_works\lab_work_5\shaders\lw5.frag" />
-    <None Include="src\lab_works\lab_work_5\shaders\lw5.vert" />
+    <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.frag" />
+    <None Include="src\lab_works\lab_work_5\shaders\mesh_texture.vert" />
+    <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.frag" />
+    <None Include="src\lab_works\lab_work_6\shaders\geometry_pass.vert" />
+    <None Include="src\lab_works\lab_work_7\shaders\fxaa_pass.frag" />
+    <None Include="src\lab_works\lab_work_7\shaders\fxaa_pass.vert" />
+    <None Include="src\lab_works\lab_work_7\shaders\geometry_pass.frag" />
+    <None Include="src\lab_works\lab_work_7\shaders\geometry_pass.vert" />
   </ItemGroup>
 </Project>

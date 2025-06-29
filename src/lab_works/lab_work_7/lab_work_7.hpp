@@ -31,16 +31,15 @@ namespace M3D_ISICG
 		void _initFBO();
 		void _initFXAA();
 		void _updateGeometryUniforms();
-
 		void _geometryPass();
 		void _fxaaPass();
 		void _initGeometryPass();
+		void _initShadowMap();
+		void _shadowPass();
 
 		// === Scene ===
 		Camera			  _camera;
 		TriangleMeshModel _model;
-
-
 
 		// === Geometry pass ===
 		GLuint _sceneFBO		= 0;
@@ -58,11 +57,34 @@ namespace M3D_ISICG
 		Vec3f _ambientColor		 = Vec3f( 0.3f, 0.3f, 0.3f );
 		Vec3f _diffuseColor		 = Vec3f( 1.f, 1.f, 1.f );
 		Vec3f _specularColor	 = Vec3f( 1.f, 1.f, 1.f );
-		Vec3f _lightPosition	 = Vec3f( 5.f, 10.f, 5.f );
+		Vec3f _lightPosition	 = Vec3f( -17.f, -17.f, -17.f );
 		float _shininess		 = 32.f;
-		float _specularIntensity = 1.f;
+		float _specularIntensity = 0.f;
 		float _aoStrength		 = 1.0f;
-		bool  _useBlinnPhong	 = true;
+		bool  _useBlinnPhong	 = false;
+
+		// === Shadow Mapping ===
+
+		// Résolution de la shadow map
+		const GLuint SHADOW_RES = 2048;
+
+		// FBO + texture
+		GLuint _shadowFBO	   = 0;
+		GLuint _shadowDepthMap = 0;
+
+		// Programme de rendu de la shadow map
+		GLuint _shadowProgram = 0;
+
+		// Matrice VP de la lumière
+		Mat4f _lightViewProj;
+
+		// Contrôle du biais des ombres
+		float _shadowBias = 1.f;
+
+		// Zone couverte par la lumière (orthographic box)
+		float _shadowOrthoSize = 10.f;
+
+		bool _enableShadow = true;
 
 		// === Texture toggles ===
 		bool _enableDiffuseMap	= true;
